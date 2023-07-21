@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Tracker</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4">Expense Tracker</h1>
+    <form id="expenseForm">
+      <div class="mb-3">
+        <label for="expenseAmount" class="form-label">Expense Amount</label>
+        <input type="number" class="form-control" id="expenseAmount" required>
+      </div>
+      <div class="mb-3">
+        <label for="expenseDescription" class="form-label">Expense Description</label>
+        <input type="text" class="form-control" id="expenseDescription" required>
+      </div>
+      <div class="mb-3">
+        <label for="expenseCategory" class="form-label">Choose Category</label>
+        <select class="form-select" id="expenseCategory" required>
+          <option value="Fuel">Fuel</option>
+          <option value="Food">Food</option>
+          <option value="Movie">Movie</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Cab">Cab</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Add Expense</button>
+    </form>
+
+    <table class="table mt-5">
+      <thead>
+        <tr>
+          <th>Expense Amount</th>
+          <th>Expense Description</th>
+          <th>Expense Category</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="expenseList">
+        
+      </tbody>
+    </table>
+  </div>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+  <script>
+    // Array to store the expenses
+    let expenses = [];
+
+    // Function to add an expense
+    function addExpense(amount, description, category) {
+      expenses.push({ amount, description, category });
+      updateExpenseList();
+    }
+
+    // Function to delete an expense
+    function deleteExpense(index) {
+      expenses.splice(index, 1);
+      updateExpenseList();
+    }
+
+    // Function to edit an expense
+    function editExpense(index, amount, description, category) {
+      expenses[index] = { amount, description, category };
+      updateExpenseList();
+    }
+
+    // Function to update the expense list displayed on the page
+    function updateExpenseList() {
+      const expenseList = document.getElementById('expenseList');
+      expenseList.innerHTML = '';
+
+      expenses.forEach((expense, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${expense.amount}</td>
+          <td>${expense.description}</td>
+          <td>${expense.category}</td>
+          <td>
+            <button class="btn btn-danger btn-sm" onclick="deleteExpense(${index})">Delete</button>
+            <button class="btn btn-secondary btn-sm" onclick="editExpense(${index}, ${expense.amount}, '${expense.description}', '${expense.category}')">Edit</button>
+          </td>
+        `;
+        expenseList.appendChild(row);
+      });
+    }
+
+    // Handle form submission
+    document.getElementById('expenseForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const amount = parseFloat(document.getElementById('expenseAmount').value);
+      const description = document.getElementById('expenseDescription').value;
+      const category = document.getElementById('expenseCategory').value;
+      if (!isNaN(amount) && description && category) {
+        addExpense(amount, description, category);
+        this.reset();
+      }
+    });
+
+    // Initial update to show the list of expenses if any
+    updateExpenseList();
+  </script>
+  
+
+<script>
+    
+  
+    // Function to edit an expense
+    function editExpense(index, amount, description, category) {
+      // Get the form fields
+      const amountInput = document.getElementById('expenseAmount');
+      const descriptionInput = document.getElementById('expenseDescription');
+      const categoryInput = document.getElementById('expenseCategory');
+  
+      // Set the form fields with the existing expense details
+      amountInput.value = amount;
+      descriptionInput.value = description;
+      categoryInput.value = category;
+  
+      // Change the form submit button to "Update Expense"
+      const submitButton = document.querySelector('button[type="submit"]');
+      submitButton.textContent = 'Update Expense';
+  
+      // Update the form submit event listener to handle update
+      document.getElementById('expenseForm').removeEventListener('submit', handleFormAdd);
+      document.getElementById('expenseForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        if (!isNaN(amountInput.value) && descriptionInput.value && categoryInput.value) {
+          // Update the expense details
+          expenses[index] = {
+            amount: parseFloat(amountInput.value),
+            description: descriptionInput.value,
+            category: categoryInput.value
+          };
+          updateExpenseList();
+          submitButton.textContent = 'Add Expense';
+          this.reset();
+          this.removeEventListener('submit', handleFormEdit);
+          this.addEventListener('submit', handleFormAdd);
+        }
+      });
+    }
+  
+    // Function to handle form submission for adding an expense
+    function handleFormAdd(event) {
+      event.preventDefault();
+      const amount = parseFloat(document.getElementById('expenseAmount').value);
+      const description = document.getElementById('expenseDescription').value;
+      const category = document.getElementById('expenseCategory').value;
+      if (!isNaN(amount) && description && category) {
+        addExpense(amount, description, category);
+        this.reset();
+      }
+    }
+  
+    // Update the form submit event listener to handle add
+    document.getElementById('expenseForm').addEventListener('submit', handleFormAdd);
+  
+    // Initial update to show the list of expenses if any
+    updateExpenseList();
+  </script>
+  
+</body>
+</html>
